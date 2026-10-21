@@ -30,7 +30,7 @@ enum ColorTheme {
     LIGHT,
     DARK
 };
-#include <FL/Fl_Double_Window.H>
+#include "gpu-window.h"
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Tabs.H>
@@ -38,7 +38,7 @@ enum ColorTheme {
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Box.H>
 
-class FLTubeMainWindow : public Fl_Double_Window {
+class FLTubeMainWindow : public dx::GpuWindow {
   void _FLTubeMainWindow();
 public:
   FLTubeMainWindow(int X, int Y, int W, int H, const char *L = 0);
@@ -105,7 +105,7 @@ public:
   Fl_Button *userUploader;
 };
 
-class TinyMessageWindow : public Fl_Double_Window {
+class TinyMessageWindow : public dx::GpuWindow {
   void _TinyMessageWindow();
 public:
   TinyMessageWindow(int X, int Y, int W, int H, const char *L = 0);
@@ -116,7 +116,7 @@ public:
 };
 #include <FL/Fl_Check_Button.H>
 
-class TinyChoiceWindow : public Fl_Double_Window {
+class TinyChoiceWindow : public dx::GpuWindow {
   void _TinyChoiceWindow();
 public:
   TinyChoiceWindow(int X, int Y, int W, int H, const char *L = 0);
@@ -129,7 +129,7 @@ public:
 };
 #include <FL/Fl_Text_Display.H>
 
-class HelpFLTubeWindow : public Fl_Double_Window {
+class HelpFLTubeWindow : public dx::GpuWindow {
   void _HelpFLTubeWindow();
 public:
   HelpFLTubeWindow(int X, int Y, int W, int H, const char *L = 0);
@@ -153,7 +153,7 @@ public:
   Fl_Text_Display *authors_txt;
 };
 
-class InitialLoadingWindow : public Fl_Double_Window {
+class InitialLoadingWindow : public dx::GpuWindow {
   void _InitialLoadingWindow();
 public:
   InitialLoadingWindow(int X, int Y, int W, int H, const char *L = 0);
@@ -163,7 +163,7 @@ public:
   Fl_Box *loading_about_data;
 };
 
-class MoreVideoInfo : public Fl_Double_Window {
+class MoreVideoInfo : public dx::GpuWindow {
   void _MoreVideoInfo();
 public:
   MoreVideoInfo(int X, int Y, int W, int H, const char *L = 0);

@@ -15,7 +15,7 @@ target_compile_definitions(fltube PRIVATE VERSION_STRING="${FLTUBE_VERSION}")
 target_include_directories(fltube PRIVATE include integration)
 include(integration/desktop-menu.cmake)
 de_xr_desktop_menu(fltube)
-target_link_libraries(fltube PRIVATE fltk::fltk-shared fltk::images-shared PkgConfig::CURL PkgConfig::FONTCONFIG Threads::Threads nlohmann_json::nlohmann_json)
+target_link_libraries(fltube PRIVATE fltk::fltk-shared fltk::gl-shared fltk::images-shared PkgConfig::CURL PkgConfig::FONTCONFIG Threads::Threads nlohmann_json::nlohmann_json)
 include(GNUInstallDirs)
 # Resource paths follow the selected installation prefix.
 target_compile_definitions(fltube PRIVATE FLTUBE_PREFIX="${CMAKE_INSTALL_PREFIX}")

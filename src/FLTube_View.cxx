@@ -79,20 +79,20 @@ Fl_Menu_Item* FLTubeMainWindow::reset_appconfig_bttn = FLTubeMainWindow::menu_op
 Fl_Menu_Item* FLTubeMainWindow::check_update_bttn = FLTubeMainWindow::menu_options_menu + 32;
 
 FLTubeMainWindow::FLTubeMainWindow(int X, int Y, int W, int H, const char *L) :
-  Fl_Double_Window(X, Y, W, H, L)
+  dx::GpuWindow(X, Y, W, H, L)
 {
   _FLTubeMainWindow();
 }
 
 FLTubeMainWindow::FLTubeMainWindow(int W, int H, const char *L) :
-  Fl_Double_Window(0, 0, W, H, L)
+  dx::GpuWindow(0, 0, W, H, L)
 {
   clear_flag(16);
   _FLTubeMainWindow();
 }
 
 FLTubeMainWindow::FLTubeMainWindow() :
-  Fl_Double_Window(0, 0, 593, 550, "FLTube")
+  dx::GpuWindow(0, 0, 593, 550, "FLTube")
 {
   clear_flag(16);
   _FLTubeMainWindow();
@@ -376,20 +376,20 @@ VideoInfo::VideoInfo(int X, int Y, int W, int H, const char *L) :
 }
 
 TinyMessageWindow::TinyMessageWindow(int X, int Y, int W, int H, const char *L) :
-  Fl_Double_Window(X, Y, W, H, L)
+  dx::GpuWindow(X, Y, W, H, L)
 {
   _TinyMessageWindow();
 }
 
 TinyMessageWindow::TinyMessageWindow(int W, int H, const char *L) :
-  Fl_Double_Window(0, 0, W, H, L)
+  dx::GpuWindow(0, 0, W, H, L)
 {
   clear_flag(16);
   _TinyMessageWindow();
 }
 
 TinyMessageWindow::TinyMessageWindow() :
-  Fl_Double_Window(0, 0, 649, 100, "Error")
+  dx::GpuWindow(0, 0, 649, 100, "Error")
 {
   clear_flag(16);
   _TinyMessageWindow();
@@ -416,20 +416,20 @@ void TinyMessageWindow::_TinyMessageWindow() {
 }
 
 TinyChoiceWindow::TinyChoiceWindow(int X, int Y, int W, int H, const char *L) :
-  Fl_Double_Window(X, Y, W, H, L)
+  dx::GpuWindow(X, Y, W, H, L)
 {
   _TinyChoiceWindow();
 }
 
 TinyChoiceWindow::TinyChoiceWindow(int W, int H, const char *L) :
-  Fl_Double_Window(0, 0, W, H, L)
+  dx::GpuWindow(0, 0, W, H, L)
 {
   clear_flag(16);
   _TinyChoiceWindow();
 }
 
 TinyChoiceWindow::TinyChoiceWindow() :
-  Fl_Double_Window(0, 0, 649, 118, "Warn")
+  dx::GpuWindow(0, 0, 649, 118, "Warn")
 {
   clear_flag(16);
   _TinyChoiceWindow();
@@ -465,20 +465,20 @@ void TinyChoiceWindow::_TinyChoiceWindow() {
 }
 
 HelpFLTubeWindow::HelpFLTubeWindow(int X, int Y, int W, int H, const char *L) :
-  Fl_Double_Window(X, Y, W, H, L)
+  dx::GpuWindow(X, Y, W, H, L)
 {
   _HelpFLTubeWindow();
 }
 
 HelpFLTubeWindow::HelpFLTubeWindow(int W, int H, const char *L) :
-  Fl_Double_Window(0, 0, W, H, L)
+  dx::GpuWindow(0, 0, W, H, L)
 {
   clear_flag(16);
   _HelpFLTubeWindow();
 }
 
 HelpFLTubeWindow::HelpFLTubeWindow() :
-  Fl_Double_Window(0, 0, 480, 352, "FLTube Help")
+  dx::GpuWindow(0, 0, 480, 352, "FLTube Help")
 {
   clear_flag(16);
   _HelpFLTubeWindow();
@@ -599,20 +599,20 @@ void HelpFLTubeWindow::_HelpFLTubeWindow() {
 }
 
 InitialLoadingWindow::InitialLoadingWindow(int X, int Y, int W, int H, const char *L) :
-  Fl_Double_Window(X, Y, W, H, L)
+  dx::GpuWindow(X, Y, W, H, L)
 {
   _InitialLoadingWindow();
 }
 
 InitialLoadingWindow::InitialLoadingWindow(int W, int H, const char *L) :
-  Fl_Double_Window(0, 0, W, H, L)
+  dx::GpuWindow(0, 0, W, H, L)
 {
   clear_flag(16);
   _InitialLoadingWindow();
 }
 
 InitialLoadingWindow::InitialLoadingWindow() :
-  Fl_Double_Window(0, 0, 236, 180, "Loading FLTube")
+  dx::GpuWindow(0, 0, 236, 180, "Loading FLTube")
 {
   clear_flag(16);
   _InitialLoadingWindow();
@@ -642,20 +642,20 @@ void InitialLoadingWindow::_InitialLoadingWindow() {
 }
 
 MoreVideoInfo::MoreVideoInfo(int X, int Y, int W, int H, const char *L) :
-  Fl_Double_Window(X, Y, W, H, L)
+  dx::GpuWindow(X, Y, W, H, L)
 {
   _MoreVideoInfo();
 }
 
 MoreVideoInfo::MoreVideoInfo(int W, int H, const char *L) :
-  Fl_Double_Window(0, 0, W, H, L)
+  dx::GpuWindow(0, 0, W, H, L)
 {
   clear_flag(16);
   _MoreVideoInfo();
 }
 
 MoreVideoInfo::MoreVideoInfo() :
-  Fl_Double_Window(0, 0, 547, 466, 0)
+  dx::GpuWindow(0, 0, 547, 466, 0)
 {
   clear_flag(16);
   _MoreVideoInfo();

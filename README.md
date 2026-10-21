@@ -37,3 +37,7 @@ layout for ambiguously labelled uploads. This player supports flat stereo video;
 it does not synthesize depth or project spherical VR180/360 sources.
 
 [Dependencies, playback, desktop integration and validation](README.XR.md).
+
+The FLTK application windows use the shared DomeD OpenGL widget driver and
+cached glyph textures. Image decode and network work remain on the CPU. Set
+`DE_XR_GL_TRACE=1` to report the selected GL renderer for diagnostics.
