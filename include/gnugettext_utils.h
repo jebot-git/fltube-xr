@@ -17,6 +17,9 @@
 #define _(String) gettext(String)
 #define ng_(SINGULAR, PLURAL, COUNT) ngettext(SINGULAR, PLURAL, COUNT)
 
+#ifndef FLTUBE_PREFIX
+#define FLTUBE_PREFIX "/usr/local"
+#endif
 #include <libintl.h>
 #include <locale.h>
 #include <iostream>
@@ -40,7 +43,7 @@ const std::map<LANGUAGE_APP, std::string> accepted_langs_text = {
     {LANGUAGE_APP::PT_BR,_("Brazilian Portuguese")},
 };
 
-const std::string DEFAULT_LOCAL_PATH("/usr/local/share/locale");
+const std::string DEFAULT_LOCAL_PATH(FLTUBE_PREFIX "/share/locale");
 const LANGUAGE_APP DEFAULT_LANGUAGE = LANGUAGE_APP::SYSTEM;
 
 void setup_gettext(const std::string& locale, const std::string& locale_path);

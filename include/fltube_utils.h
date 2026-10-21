@@ -12,6 +12,9 @@
  */
 #ifndef FLTUBE_UTILS_H
 #define FLTUBE_UTILS_H
+#ifndef FLTUBE_PREFIX
+#define FLTUBE_PREFIX "/usr/local"
+#endif
 
 #include <string>
 #include <memory>
@@ -49,11 +52,11 @@ const std::string VIDEOCODEC_PREFERRED = "avc1";
 const std::string AUDIOCODEC_PREFERRED = "m4a";
 
 /** You can change here for the player of your like (in example: vlc, mpv, etc.). It must be installed in your system. **/
-const std::string DEFAULT_STREAM_PLAYER = "mplayer";
+const std::string DEFAULT_STREAM_PLAYER = "mpvr";
 /** Modify the launch parameters of the DEFAULT_STREAM_PLAYER. */
-const std::string DEFAULT_PLAYER_PARAMS = "-zoom -ao alsa";
+const std::string DEFAULT_PLAYER_PARAMS = "";
 /** Extra parameters for optimize the stream of a live video. */
-const std::string DEFAULT_PLAYER_EXTRAPARAMS_LIVE = "-demuxer lavf -cache 2048";
+const std::string DEFAULT_PLAYER_EXTRAPARAMS_LIVE = "";
 
 const std::string DOWNLOAD_VIDEO_PREFERRED_EXT = "mp4";
 

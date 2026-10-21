@@ -13,6 +13,7 @@
 
 #include "../include/ytdlp_helper.h"
 #include <cstdio>
+#include "mpvr_playback.h"
 #include <string>
 
 const std::string YtDlp_Helper::DEFAULT_YTDLP_PATH = "yt-dlp";
@@ -243,6 +244,15 @@ std::string YtDlp_Helper::get_stream_url(const char* video_url, const char* stre
 }
 
 FLTUBE_STATUS_CODES YtDlp_Helper::stream(const char* video_url) {
+    if (std::filesystem::path(media_player->getBinaryPath()).filename() == "mpvr") {
+        const int status = fltube_play_mpvr(media_player->getBinaryPath(),
+            media_player->getParams(), video_url, video_resolution, xr_layout.load(), YTDLP_BIN_PATH);
+        if (status != 0) {
+            logger->error("mpvr playback failed (status " + std::to_string(status) + "). Check yt-dlp and XR availability.");
+            return FTL_HTTP_GENERAL_ERROR;
+        }
+        return FLT_OK;
+    }
     char stream_videoplayer_cmd[3072];
     char stream_format[100];
     std::string final_url_result;
@@ -368,4 +378,5 @@ const std::string YtDlp_Helper::get_metadata_template() {
         case YT_METADATA_PROFILE::DETAILED:
             return YtDlp_Helper::PRINT_DETAILED_METADATA_TEMPLATE;
     }
+    return YtDlp_Helper::PRINT_SEARCH_METADATA_TEMPLATE;
 }

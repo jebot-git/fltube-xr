@@ -1,3 +1,5 @@
+#include "appearance.h"
+#include "desktop-menu.h"
 /*
  * Copyright (C) 2025-2026 - FLtube
  *
@@ -53,18 +55,23 @@ std::atomic<FLTUBE_STATUS_CODES> last_stream_result(FLT_OK);
 // Array that holds the search results METADATA, in groups of size @PaginationManager::SEARCH_PAGE_SIZE...
 std::array <YTDLP_Video_Metadata*, PaginationManager::SEARCH_PAGE_SIZE> video_metadata{ nullptr, nullptr, nullptr, nullptr };
 
-const std::string FLTUBE_TEMPORAL_DIR(std::filesystem::temp_directory_path().generic_string() + "/fltube_tmp_files/");
+std::string FLTUBE_TEMPORAL_DIR;
 
 //This FLAG changes over the application usage. If user wants to see all videos of a channel, is set to true (0). Defaults to false.
 bool SEARCH_BY_CHANNEL_F = false;
 
-std::string USER_CONFIGFILE_PATH = std::string(getHomePathOr("")) + "/.config/fltube/fltube.conf";
+std::string xdg_path(const char* key, const char* fallback) {
+    const char* value = std::getenv(key);
+    return (value && value[0] == '/') ? value : std::string(getHomePathOr("")) + fallback;
+}
 
-std::string USERDATA_FILE_PATH = std::string(getHomePathOr("")) + "/.local/share/fltube/userdata.txt";
+std::string USER_CONFIGFILE_PATH = xdg_path("XDG_CONFIG_HOME", "/.config") + "/fltube/fltube.conf";
 
-std::string SYSTEM_CONFIGFILE_PATH = "/usr/local/etc/fltube/fltube.conf";
+std::string USERDATA_FILE_PATH = xdg_path("XDG_DATA_HOME", "/.local/share") + "/fltube/userdata.txt";
 
-std::string CONFIG_APP_PATH = std::string(getHomePathOr("")) + "/.config/fltube/app.conf";
+std::string SYSTEM_CONFIGFILE_PATH = FLTUBE_PREFIX "/etc/fltube/fltube.conf";
+
+std::string CONFIG_APP_PATH = xdg_path("XDG_CONFIG_HOME", "/.config") + "/fltube/app.conf";
 
 // Keep the current selected color theme
 ColorTheme CURRENT_COLOR_THEME = ColorTheme::DEFAULT;
@@ -72,7 +79,7 @@ ColorTheme CURRENT_COLOR_THEME = ColorTheme::DEFAULT;
 std::string CONFIG_FILE_PATH = "";
 
 // Path to fltube resources, like images, sounds, etc. Can be modified at fltube.conf file.
-std::string RESOURCES_PATH = "/usr/local/share/fltube/resources";
+std::string RESOURCES_PATH = FLTUBE_PREFIX "/share/fltube/resources";
 
 // Current displayed language for UI.
 std::string current_language;
@@ -289,7 +296,7 @@ void showFLTubeHelpWindow(Fl_Widget* w) {
         char version_text[20];
         snprintf(version_text, sizeof(version_text), _("Version %s"), VERSION);
         helpWin->about_version->copy_label(version_text);
-        helpWin->hlp_fltube_img->image(load_image("/usr/local/share/icons/fltube/128x128.png"));
+        helpWin->hlp_fltube_img->image(load_image(FLTUBE_PREFIX "/share/icons/fltube/128x128.png"));
         helpWin->hlp_source_code->callback([](Fl_Widget*) {openURI("https://gitlab.com/facuA/fltube");});
         helpWin->hlp_fltk_link->callback([](Fl_Widget*) {openURI("https://www.fltk.org/");});
         helpWin->hlp_ytdlp_link->callback([](Fl_Widget*) {openURI("https://github.com/yt-dlp/yt-dlp");});
@@ -841,7 +848,14 @@ void switch_color_theme(ColorTheme ct, bool force_reload = false) {
 
     if (CURRENT_COLOR_THEME == ct && !force_reload)  return;
     else CURRENT_COLOR_THEME = ct;
-    switch (ct) {
+    if (dx::dome()) {
+        unsigned char r, g, b;
+        Fl::get_color(FL_BACKGROUND_COLOR, r, g, b);
+        ct = (r + g + b < 384) ? ColorTheme::DARK : ColorTheme::LIGHT;
+        CURRENT_COLOR_THEME = ct;
+        new_theme_name = "DomeD appearance";
+        reload_icons = true;
+    } else switch (ct) {
         case ColorTheme::DEFAULT:
             new_theme_name=_("Default Theme");
             Fl::set_color(FL_BACKGROUND_COLOR, 192, 192, 192);
@@ -1058,6 +1072,7 @@ void pre_init() {
         CONFIG_FILE_PATH = (std::filesystem::exists(USER_CONFIGFILE_PATH)) ? USER_CONFIGFILE_PATH : SYSTEM_CONFIGFILE_PATH;
     logger->debug(_("Loading configurations from ") + CONFIG_FILE_PATH);
     initial_win->loading_about_data->label(_("Processing configuration file..."));
+    std::filesystem::create_directories(std::filesystem::path(CONFIG_APP_PATH).parent_path());
     config = new ConfigurationManager(CONFIG_FILE_PATH.c_str(), CONFIG_APP_PATH.c_str(), logger);
     //Init Localization. Use locale path specified at config, or custom config DEFAULT_LOCAL_PATH.
     current_language = config->getProperty("LANGUAGE_APP", accepted_langs.at(DEFAULT_LANGUAGE).c_str());
@@ -1068,7 +1083,8 @@ void pre_init() {
     //TODO Create properties defining if enable the use of cache and the TTL for every cache entry...
     initial_win->loading_about_data->label(_("Populating cache..."));
     cache = std::make_shared<PermanentDiskCache>(logger);
-    std::string default_cache_path = std::string(getHomePathOr("")) + "/.cache/fltube";
+    std::string default_cache_path = xdg_path("XDG_CACHE_HOME", "/.cache") + "/fltube";
+    std::filesystem::create_directories(default_cache_path);
     cache->set_save_directory_path(
         config->getProperty("CACHE_PATH", default_cache_path.c_str()), "fltube_url_cache.txt");
     cache->init();
@@ -1685,9 +1701,74 @@ void parseOptions(int argc, char **argv){
 ///////////////// MAIN     MAIN     MAIN        MAIN        MAIN   //////////////
 //////////////////////////////////////////////////////////////////////////////////
 
+void install_dome_menu() {
+    static Fl_Menu_Item files[] = {
+        {"Search YouTube or open URL", 0, [](Fl_Widget*, void*) { mainWin->search_term_or_url->take_focus(); }},
+        {"Quit", FL_CTRL + 'q', [](Fl_Widget*, void*) { exitApp(); }},
+        {nullptr}
+    };
+    files[0].shortcut(config->getShortcutFor(SHORTCUTS::FOCUS_SEARCH));
+    static Fl_Menu_Item help[] = {
+        {"About FLTube and keyboard shortcuts", 0, [](Fl_Widget*, void*) { showFLTubeHelpWindow(nullptr); }},
+        {nullptr}
+    };
+    help[0].shortcut(config->getShortcutFor(SHORTCUTS::SHOW_HELP));
+    static Fl_Menu_Item xr[] = {
+        {"Automatic"}, {"Full SBS"}, {"Half SBS"},
+        {"Full top-bottom"}, {"Half top-bottom"}, {"Mono"}, {nullptr}
+    };
+    int layout = config->getIntProperty("XR_VIDEO_LAYOUT", 0);
+    if (layout < 0 || layout > 5) layout = 0;
+    ytdlp->set_xr_layout(layout);
+    for (int i = 0; i < 6; ++i) {
+        xr[i].flags = FL_MENU_RADIO | (i == layout ? FL_MENU_VALUE : 0);
+        xr[i].callback([](Fl_Widget*, void* data) {
+            int value = static_cast<int>(reinterpret_cast<intptr_t>(data));
+            ytdlp->set_xr_layout(value);
+            config->addAppProperty("XR_VIDEO_LAYOUT", std::to_string(value).c_str());
+        }, reinterpret_cast<void*>(static_cast<intptr_t>(i)));
+    }
+    static Fl_Menu_Item menu[] = {
+        {"File", 0, nullptr, files, FL_SUBMENU_POINTER},
+        {"Options", 0, nullptr, FLTubeMainWindow::menu_options_menu + 1, FL_SUBMENU_POINTER},
+        {"XR video", 0, nullptr, xr, FL_SUBMENU_POINTER},
+        {"Help", 0, nullptr, help, FL_SUBMENU_POINTER},
+        {nullptr}
+    };
+    if (dx::dome()) {
+        mainWin->default_theme_bttn->deactivate();
+        mainWin->light_theme_bttn->deactivate();
+        mainWin->dark_theme_bttn->deactivate();
+    }
+    mainWin->options_menu->menu(menu);
+    mainWin->options_menu->resize(42, 6, mainWin->w() - 52, 24);
+    mainWin->about_bttn->hide();
+}
+
+void follow_dome_appearance(void*) {
+    static std::string previous;
+    dx::appearance();
+    if (dx::dome() && previous != dx::last) {
+        previous = dx::last;
+        switch_color_theme(CURRENT_COLOR_THEME, true);
+        dx::style(mainWin);
+    }
+    Fl::repeat_timeout(.35, follow_dome_appearance);
+}
+
 int main(int argc, char **argv) {
     parseOptions(argc, argv);
+    // A player/browser instance owns only its own temporary files.
+    std::string pattern = (std::filesystem::temp_directory_path() / "fltube-XXXXXX").string();
+    std::vector<char> temporary(pattern.begin(), pattern.end());
+    temporary.push_back('\0');
+    if (!mkdtemp(temporary.data())) {
+        std::perror("Cannot create FLTube temporary directory");
+        return FLT_GENERAL_FAILED;
+    }
+    FLTUBE_TEMPORAL_DIR = std::string(temporary.data()) + "/";
     logger = std::make_shared<TerminalLogger>(DEBUG_ENABLED);
+    dx::init();
     showInitialWindow();
     auto preinit_f = [&]() {
         pre_init();
@@ -1724,7 +1805,7 @@ int main(int argc, char **argv) {
     mainWin = new FLTubeMainWindow();
     mainWin->copy_label(message);
     center_window(mainWin);
-    mainWin->callback((Fl_Callback*)exitApp);
+    mainWin->callback([](Fl_Widget*, void*) { exitApp(); });
     mainWin->search_term_or_url->when(FL_WHEN_ENTER_KEY);
     mainWin->search_term_or_url->callback((Fl_Callback*)searchButtonAction_cb, (void*)(mainWin->search_term_or_url));
     mainWin->search_term_or_url->shortcut(config->getShortcutFor(SHORTCUTS::FOCUS_SEARCH));
@@ -1743,8 +1824,13 @@ int main(int argc, char **argv) {
     mainWin->last_page_bttn->deactivate();
 
     post_init();
+    install_dome_menu();
+    dx::style(mainWin);
+    DesktopMenu desktop_menu(*mainWin, *mainWin->options_menu);
+    Fl::add_timeout(.35, follow_dome_appearance);
     //mainWin->show(argc, argv);    //TODO Avoid passing parameters to the mainWin function to prevent undesirable logs.
-    mainWin->icon(load_image("/usr/local/share/icons/fltube/64x64.png"));
+    mainWin->icon(load_image(FLTUBE_PREFIX "/share/icons/fltube/64x64.png"));
+    mainWin->xclass("org.domed.FLTube");
     mainWin->show();
     logger->debug(_("The FLTube main window has loaded."));
     return Fl::run();

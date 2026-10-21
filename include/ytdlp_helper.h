@@ -13,6 +13,7 @@
 
 #ifndef YTDLP_HELPER_H
 #define YTDLP_HELPER_H
+#include <atomic>
 
 #include <string>
 #include <array>
@@ -160,6 +161,7 @@ class YtDlp_Helper {
         std::string PRINT_DETAILED_METADATA_TEMPLATE;
 
         VCODEC_RESOLUTIONS video_resolution;
+        std::atomic<int> xr_layout{0};
         YTDLP_EXTRACTOR extractor;
         const static int DEFAULT_MIN_BATCH_SIZE = 40;
         const static int DEFAULT_MAX_BATCH_SIZE = 200;
@@ -251,6 +253,8 @@ class YtDlp_Helper {
         }
 
         /*  Change the configured extractor permanently. */
+        void set_xr_layout(int layout) { xr_layout.store(layout); }
+
         void set_resolution(VCODEC_RESOLUTIONS res) {
             this->video_resolution = res;
         }

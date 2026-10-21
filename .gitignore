@@ -4,3 +4,8 @@ build/
 *.orig
 *.deb
 web/
+
+build-release/
+stage/
+artifacts/
+build-system-release/
