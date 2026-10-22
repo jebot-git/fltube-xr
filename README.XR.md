@@ -24,6 +24,15 @@ started or restarted. mpvr repacks top/bottom to its established SBS transport o
 the GPU. This handles existing flat stereoscopic video; it does not synthesize
 depth or project spherical VR180/360, anaglyph or checkerboard video.
 
+## Command-line reference
+
+Run `fltube --help` or read [fltube(1)](docs/man/fltube.1) with
+`man -l docs/man/fltube.1`. `fltube --config=/absolute/path/fltube.conf` selects
+an existing configuration file; the equals sign is required. Video URLs are
+entered in the window rather than passed as positional arguments. `--debug`
+and `--version` are also supported. The source manpage is not yet part of the
+CMake install manifest.
+
 ## Desktop conventions
 
 The FLTK menu exports real commands through DBusMenu and the native Wayland
@@ -50,7 +59,7 @@ Runtime playback needs the updated mpvr and yt-dlp.
 
 ```sh
 cmake -S . -B build-release -G Ninja \
-  -DCMAKE_PREFIX_PATH="$PWD/../fltk-vr/_toolkit" \
+  -DCMAKE_PREFIX_PATH="${FLTK_PREFIX:-/opt/fltk-vr/toolkit}" \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON \
   -DCMAKE_INSTALL_PREFIX="$HOME/.local/opt/fltube"
 cmake --build build-release --parallel 6
@@ -67,6 +76,10 @@ and `DESTDIR` is the staging root. Use `FLTK_PREFIX` to select another toolkit.
 System installation requires sudo only for the final install, after verification.
 
 ## Validation
+
+The following describes the repository's existing validation harnesses and
+previously recorded results, not a fresh headset or live-network certification.
+
 
 `ctest` checks the C++ player launch path, exact URL arguments, quoted options,
 layout, custom yt-dlp path, exit status and rejection of shell command evaluation.

@@ -1,0 +1,97 @@
+.TH FLTUBE 1 "21 October 2026" "FLTube XR 2.2.0" "de-xr User Commands"
+.SH NAME
+fltube \- FLTK YouTube browser with DomeD stereoscopic playback
+.SH SYNOPSIS
+.B fltube
+.RI [ options ]
+.SH DESCRIPTION
+FLTube searches YouTube with yt-dlp and displays results in a native FLTK
+window. Enter a search term or video URL in the application's input field;
+there is no positional command-line URL option.
+.PP
+This fork integrates with DomeD's universal menu and live appearance settings.
+It uses mpvr as its default video player. The original webpage URL is passed
+to mpvr's yt-dlp hook, retaining the player's audio, seeking and stream handling.
+A different player can be configured in fltube.conf.
+.SH OPTIONS
+.TP
+.BI \-\-config= /absolute/path/fltube.conf
+Use an existing configuration file instead of the normal configuration search.
+The equals sign is required; a separate following argument is not supported.
+.TP
+.BR \-d ", " \-\-debug
+Enable verbose diagnostic logging.
+.TP
+.BR \-h ", " \-\-help
+Print command-line help and exit.
+.TP
+.BR \-v ", " \-\-version
+Print the program version and exit.
+.SH STEREOSCOPIC PLAYBACK
+Choose a layout in the
+.B XR video
+menu before opening a video: Automatic, Full SBS, Half SBS, Full top-bottom,
+Half top-bottom, or Mono. The choice persists between launches.
+Automatic selection uses source metadata and explicit packing markers;
+ambiguous uploads need a manual choice.
+.PP
+Full layouts retain each eye's normal dimensions. Half layouts squeeze the
+packing axis. Configure
+.B \-\-swap-eyes
+in STREAM_PLAYER_PARAMS when source eyes are reversed.
+.PP
+An active DomeD XR session uses mpvr's stereo surface; otherwise playback uses
+the desktop. This handles existing flat stereoscopic material, not depth
+synthesis or spherical VR180/360 projection. A matching mpvr installation with
+top-bottom support is required for those layouts.
+.SH KEYBOARD
+Ctrl+L focuses the search/URL field. Ctrl+Q quits.
+Other FLTube shortcuts remain configurable in its configuration.
+The launched player retains its own playback shortcuts.
+.SH CONFIGURATION
+Configuration precedence is an explicit
+.BR \-\-config= FILE,
+then $XDG_CONFIG_HOME/fltube/fltube.conf, then
+.I PREFIX/etc/fltube/fltube.conf
+where PREFIX is the build's installation prefix (normally /usr/local).
+An unset XDG_CONFIG_HOME falls back to $HOME/.config.
+.PP
+STREAM_PLAYER_PATH selects the external player; the default is mpvr.
+STREAM_PLAYER_PARAMS supplies player arguments, and
+STREAM_PLAYER_EXTRA_PARAMS_FOR_LIVE supplies additional live-stream arguments.
+YTDLP_PATH selects a custom yt-dlp executable.
+XR_VIDEO_LAYOUT stores the layout selection (0 through 5 in menu order).
+.SH FILES
+.TP
+.I $XDG_CONFIG_HOME/fltube/app.conf
+Persisted application settings; defaults under $HOME/.config.
+.TP
+.I $XDG_DATA_HOME/fltube/userdata.txt
+Saved user data; defaults under $HOME/.local/share.
+.TP
+.I $XDG_CACHE_HOME/fltube/
+Default cache location; defaults under $HOME/.cache.
+.TP
+.I $XDG_CONFIG_HOME/dome/appearance.json
+DomeD appearance settings followed live in Dome sessions. Local color overrides
+are disabled there; other desktops retain FLTube's themes.
+.SH ENVIRONMENT
+.TP
+.B DE_XR_GL_TRACE
+Set to 1 to report the selected shared FLTK OpenGL widget renderer.
+.SH EXAMPLES
+.nf
+fltube
+fltube --config=/home/user/.config/fltube/testing.conf
+fltube --version
+.fi
+.SH SEE ALSO
+.BR mpv (1),
+.BR yt-dlp (1)
+.PP
+The fork's README.md and README.XR.md describe build prerequisites and validation.
+This source manpage is not currently installed by the CMake install rules;
+read it with: man -l docs/man/fltube.1
+.SH AUTHORS
+FLTube upstream is maintained by Facundo Adorno.
+The DomeD fork retains the upstream GPL-3.0 license and history.
