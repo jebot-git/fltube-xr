@@ -15,6 +15,7 @@
 #ifndef FLTube_View_h
 #define FLTube_View_h
 #include <FL/Fl.H>
+#include "desktop-menu.h"
 #include "../include/custom_widgets.h"
 #include <FL/Fl_Scroll.H>
 #ifndef GETTEXT_MACROS_H
@@ -46,7 +47,7 @@ public:
   FLTubeMainWindow();
   Fl_Button *warn_mssg_bttn;
   Fl_Button *about_bttn;
-  Fl_Menu_Bar *options_menu;
+  DesktopMenuBar *options_menu;
   static Fl_Menu_Item menu_options_menu[];
   static Fl_Menu_Item *quality_240_bttn;
   static Fl_Menu_Item *quality_360_bttn;

@@ -106,6 +106,11 @@ try:
         env['XDG_CURRENT_DESKTOP'] = 'Dome'
         env['FLTK_BACKEND'] = 'wayland'
         env['DE_XR_APPEARANCE_TRACE'] = '1'
+        appearance = runtime / '.config/dome/appearance.json'
+        appearance.parent.mkdir(parents=True, exist_ok=True)
+        initial_pixels = int(os.environ.get('FLTUBE_TEST_FONT_SIZE', '16'))
+        appearance.write_text(json.dumps(dict(light=False, accent='#6babff',
+            font=os.environ.get('FLTUBE_TEST_FONT', 'Unifont / Sans-Serif'), font_size=initial_pixels)))
         app = start([os.environ.get('FLTUBE_BINARY', str(ROOT / 'build-release/fltube')), '--debug'], 'fltube', env)
         service = wait(lambda: owner(app.pid))
         print('MENU SERVICE', service, flush=True)
@@ -150,6 +155,7 @@ try:
             image.save(ART / (name + '.png'))
             return image
         dark = capture('dark')
+        assert f'font=16 size={initial_pixels}' in (ART / 'fltube.log').read_text(), 'Selected BDF font was not applied'
         appearance = runtime / '.config/dome/appearance.json'
         appearance.parent.mkdir(parents=True, exist_ok=True)
         appearance.write_text(json.dumps(dict(light=True, accent='#ff6633', font='Unifont / Sans-Serif', font_size=16)))

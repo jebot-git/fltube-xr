@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 #include "appearance.h"
+#include "gpu-image.h"
 #include "suite-icons.h"
 #include <FL/Fl_Gl_Window.H>
 #include <FL/Fl_SVG_Image.H>
@@ -68,7 +69,10 @@ public:
     Fl::get_color(FL_BACKGROUND_COLOR, r, g, b);
     glClearColor(r / 255.f, g / 255.f, b / 255.f, 1);
     glClear(GL_COLOR_BUFFER_BIT);
+    const bool previous = drawing_gl;
+    drawing_gl = true;
     Fl_Gl_Window::draw();
+    drawing_gl = previous;
   }
 };
 } // namespace dx

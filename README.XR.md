@@ -54,7 +54,8 @@ own native universal-menu export.
 ## Optimized build and staged installation
 
 Dependencies: patched FLTK 1.4.5, CMake, C++17 compiler, curl, Fontconfig,
-nlohmann-json, GIO, Wayland/X11 development headers, wayland-scanner and gettext.
+nlohmann-json, GIO, zlib, libwebp, OpenGL, Wayland/X11 development headers,
+wayland-scanner and gettext.
 Runtime playback needs the updated mpvr and yt-dlp.
 
 ```sh
@@ -109,3 +110,26 @@ manager sessions do not need to be restarted.
 
 To validate the system frontend, run
 `FLTUBE_BINARY=/usr/local/bin/fltube /usr/bin/python3 tests/test_domed_ui.py`.
+
+## Menu, font and thumbnail corrections (2026-10-23)
+
+The local menu leaves the window only after a real universal-menu registrar and
+window association are available; it returns when the host disappears. The
+external FLUID submenu fingerprint remains intact, so state changes still reach
+the universal menu. The appearance bridge resolves Dome's qualified BDF font
+names and integer scaling, including bundled fonts, instead of falling back to
+Helvetica. Ctrl+L in the search field selects its text without inserting a control
+character.
+
+Thumbnail URLs are used as returned by yt-dlp, with a primary/last-thumbnail
+fallback. Download HTTP failures are rejected. JPEG/PNG/WebP decoding follows
+file contents, validates dimensions and fits both row dimensions. Failed decodes
+replace old content with a placeholder. The FLTK OpenGL widget driver does not
+implement raster drawing, so the port supplies a GL image adapter for thumbnails
+and PNG action icons while retaining CPU drawing for image surfaces.
+
+`ctest` covers real image decoding, corrupt responses, aspect fitting, GL widget
+pixels and player argument handling. The private DomeD menu test also accepts
+`FLTUBE_TEST_FONT` and `FLTUBE_TEST_FONT_SIZE` for a selected BDF face; the
+Galmuri11 qualified face at 17 pixels was checked. A live YouTube thumbnail
+response was WebP despite its JPEG URL and decoded correctly in the new loader.

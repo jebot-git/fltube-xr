@@ -22,7 +22,8 @@ comment {/*
 }
 
 decl {\#include "../include/custom_widgets.h"
-\#include <FL/Fl_Scroll.H>} {public global
+\#include <FL/Fl_Scroll.H>
+\#include "desktop-menu.h"} {public global
 }
 
 declblock {\#ifndef GETTEXT_MACROS_H} {open public map 3 after {\#endif}
@@ -56,7 +57,7 @@ widget_class FLTubeMainWindow {
     tooltip {Show info about this application and some help of how to use it.} xywh {521 6 64 22}
   }
   Fl_Menu_Bar options_menu {open
-    xywh {434 6 80 22}
+    xywh {434 6 80 22} class DesktopMenuBar
   } {
     Submenu {} {
       label Options open

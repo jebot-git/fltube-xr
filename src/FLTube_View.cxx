@@ -116,7 +116,7 @@ void FLTubeMainWindow::_FLTubeMainWindow() {
   { about_bttn = new Fl_Button(521, 6, 64, 22, _("Help"));
     about_bttn->tooltip(_("Show info about this application and some help of how to use it."));
   } // Fl_Button* about_bttn
-  { options_menu = new Fl_Menu_Bar(434, 6, 80, 22);
+  { options_menu = new DesktopMenuBar(434, 6, 80, 22);
     { Fl_Menu_Item* o = &menu_options_menu[0];
       o->label(_(o->label()));
     }

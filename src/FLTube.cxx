@@ -118,31 +118,31 @@ PaginationManager* page_manager = nullptr;
 
 // First position keeps the "light" image version. Second position, the "dark" image version.
 const int LIGHT_ICON_POS = 0; const int DARK_ICON_POS = 1;
-std::array<Fl_PNG_Image*,2> already_viewed_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> like_icon_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> like_red_icon_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> cached_icon_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> moreinfo_icon_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> remove_video_icon_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> watchlater_icon_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> watchlater_filled_icon_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> arrow_up_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> arrow_down_alts {nullptr, nullptr};
-std::array<Fl_PNG_Image*,2> warn_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> already_viewed_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> like_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> like_red_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> cached_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> moreinfo_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> remove_video_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> watchlater_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> watchlater_filled_icon_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> arrow_up_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> arrow_down_alts {nullptr, nullptr};
+std::array<Fl_Image*,2> warn_icon_alts {nullptr, nullptr};
 
-Fl_PNG_Image* live_image = nullptr;
-Fl_PNG_Image* already_viewed_image = nullptr;
-Fl_PNG_Image* like_icon_image = nullptr;
-Fl_PNG_Image* like_red_icon_image = nullptr;
-Fl_PNG_Image* playicon_image = nullptr;
-Fl_PNG_Image* cached_icon_image = nullptr;
-Fl_PNG_Image* moreinfo_icon_image = nullptr;
-Fl_PNG_Image* remove_video_icon_image = nullptr;
-Fl_PNG_Image* watchlater_icon_image = nullptr;
-Fl_PNG_Image* watchlater_filled_icon_image = nullptr;
-Fl_PNG_Image* arrow_up = nullptr;
-Fl_PNG_Image* arrow_down = nullptr;
-Fl_PNG_Image* warn_icon_image = nullptr;
+Fl_Image* live_image = nullptr;
+Fl_Image* already_viewed_image = nullptr;
+Fl_Image* like_icon_image = nullptr;
+Fl_Image* like_red_icon_image = nullptr;
+Fl_Image* playicon_image = nullptr;
+Fl_Image* cached_icon_image = nullptr;
+Fl_Image* moreinfo_icon_image = nullptr;
+Fl_Image* remove_video_icon_image = nullptr;
+Fl_Image* watchlater_icon_image = nullptr;
+Fl_Image* watchlater_filled_icon_image = nullptr;
+Fl_Image* arrow_up = nullptr;
+Fl_Image* arrow_down = nullptr;
+Fl_Image* warn_icon_image = nullptr;
 
 /* Keep the current displayed cursor. FLTK doesn't have a way to know this. */
 Fl_Cursor current_displayed_cursor = FL_CURSOR_DEFAULT;
@@ -243,9 +243,9 @@ bool showChoiceWindow(const char* message, bool& keepShowingFlag) {
     return choice_result;
 }
 
-Fl_PNG_Image* load_image(std::string path) {
+Fl_RGB_Image* load_image(std::string path) {
     if (std::filesystem::exists(path)) {
-        return new Fl_PNG_Image(path.c_str());
+        return dx::gpu_image(new Fl_PNG_Image(path.c_str()));
     } else {
         char message[1024];
         snprintf(message, sizeof(message), _("Resource image at '%s' cannot be loaded..."), path.c_str());
@@ -258,7 +258,7 @@ Fl_PNG_Image* load_image(std::string path) {
  * Load a PNG image from the resource directory, and return as a Fl_PNG_Image object.
  * If image not exists, a nullptr is returned.
  */
-Fl_PNG_Image* load_resource_image(std::string image_filename) {
+Fl_Image* load_resource_image(std::string image_filename) {
     std::string resource_image_path = RESOURCES_PATH + "/img/" + image_filename;
     return load_image(resource_image_path);
 }
@@ -581,27 +581,17 @@ void update_video_info() {
             video_info_arr[j]->thumbnail->user_data(static_cast<void*>(&video_metadata[j]->url));
 
             //Download, resize and update the video thumbnail image...
-            int cut_pos = video_metadata[j]->thumbnail_url.find("hq720.jpg?");
-            if (cut_pos == std::string::npos)   cut_pos = video_metadata[j]->thumbnail_url.find("hqdefault.jpg?");
-            std::string thumbn_url = video_metadata[j]->thumbnail_url.substr(0, cut_pos)
-                + ((cut_pos != std::string::npos) ? "mqdefault.jpg" : "");
-            std::string thumbn_name = "th_" + video_metadata[j]->id + ".jpg";
+            const auto& thumbn_url = video_metadata[j]->thumbnail_url;
+            std::string thumbn_name = "th_" + video_metadata[j]->id + ".img";
+            Fl_Image* thumbnail = nullptr;
             if (download_file(thumbn_url, FLTUBE_TEMPORAL_DIR, thumbn_name, network->get_connection()) != FLT_DOWNLOAD_FL_FAILED) {
-                int targetWidth = video_info_arr[j]->thumbnail->w();
-                Fl_Image* resized_thumbnail = create_resized_image_from_jpg(FLTUBE_TEMPORAL_DIR + thumbn_name, targetWidth);
-                if (resized_thumbnail == nullptr) {
-                    logger->error(_("Something went wrong when generating a resize thumbnail for video with ID=") + video_metadata[j]->id);
-                } else {
-                    delete video_info_arr[j]->thumbnail->image();
-                    video_info_arr[j]->thumbnail->image(resized_thumbnail);
-                    video_info_arr[j]->thumbnail->redraw();
-                }
-            } else {
-                //If thumbnail cannot be downloaded, then load a generic one...
-                Fl_PNG_Image* generic_thumbnail = load_resource_image("no_thumbnail_available.png");
-                video_info_arr[j]->thumbnail->image(generic_thumbnail);
-                video_info_arr[j]->thumbnail->redraw();
+                thumbnail = create_resized_image(FLTUBE_TEMPORAL_DIR + thumbn_name,
+                    video_info_arr[j]->thumbnail->w(), video_info_arr[j]->thumbnail->h());
             }
+            if (!thumbnail) thumbnail = load_resource_image("no_thumbnail_available.png");
+            delete video_info_arr[j]->thumbnail->image();
+            video_info_arr[j]->thumbnail->image(thumbnail);
+            video_info_arr[j]->thumbnail->redraw();
 
         } else {
             // Hide the VideoInfo widget if there are no more results to show...
@@ -979,13 +969,11 @@ void show_video_metadata_cb(Fl_Widget* w, void* data) {
     std::string v_url = *static_cast<std::string*>(vi->thumbnail->user_data());
     std::string v_id = v_url;
     replace_all(v_id, std::string(YOUTUBE_URL_PREFIX), "");
-    std::string thumbn_name = "th_" + v_id + ".jpg";
+    std::string thumbn_name = "th_" + v_id + ".img";
     int targetWidth = detailed_metadata_win->vm_thumbnail->w();
-    Fl_Image* resized_thumbnail = create_resized_image_from_jpg(FLTUBE_TEMPORAL_DIR + thumbn_name, targetWidth);
+    Fl_Image* resized_thumbnail = create_resized_image(FLTUBE_TEMPORAL_DIR + thumbn_name, targetWidth, detailed_metadata_win->vm_thumbnail->h());
     delete detailed_metadata_win->vm_thumbnail->image();
-    if (resized_thumbnail != nullptr) {
-        detailed_metadata_win->vm_thumbnail->image(resized_thumbnail);
-    }
+    detailed_metadata_win->vm_thumbnail->image(resized_thumbnail);
     detailed_metadata_win->vm_thumbnail->redraw();
     detailed_metadata_win->delete_all_metadata();
     detailed_metadata_win->vm_retrieving_info->show();

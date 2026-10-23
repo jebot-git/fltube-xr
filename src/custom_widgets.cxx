@@ -22,6 +22,11 @@
 int SearchInput::handle(int event) {
     std::string new_value;
     if (event == FL_KEYDOWN) {
+        if (Fl::event_state(FL_CTRL) && Fl::event_key() == 'l') {
+            take_focus();
+            position(size(), 0);
+            return 1;
+        }
         switch (Fl::event_key()) {
             case FL_Up:
                 new_value = ytdlp_source->getNextInSearchHistory();

@@ -192,6 +192,8 @@ FLTUBE_STATUS_CODES download_file(std::string url, std::string output_dir, std::
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+    curl_easy_setopt(curl, CURLOPT_MAXFILESIZE_LARGE, curl_off_t(16 * 1024 * 1024));
     CURLcode response = curl_easy_perform(curl);
 
     if (response != CURLE_OK) {
@@ -238,24 +240,6 @@ FLTUBE_STATUS_CODES check_url_access(std::string url, CURL *curl) {
     return returnCode;
 }
 
-/** Returns a resized Fl_Image widget from an existing JPG image. If original image doesn't exists, a @nullptr is returned.*/
-Fl_Image* create_resized_image_from_jpg(std::string jpg_filepath, int target_width){
-    if(!std::filesystem::exists(jpg_filepath)) {
-        return nullptr;
-    }
-    Fl_Image* original_image = new Fl_JPEG_Image(jpg_filepath.c_str());
-
-    /*** Resize method --> https://es.elitescreens.eu/pages/screen-size-calculator ***/
-    // (h / w) * target_width
-    int new_height = ceil((original_image->h() / static_cast<double>(original_image->w())) * target_width);
-
-    Fl_Image* resized_image = original_image->copy(target_width, new_height);
-
-    //Free unused memory.
-    delete original_image;
-
-    return  resized_image;
-}
 
 /*
  * Parse a parameter with the form "key=value". In example: "--aKey=aValue" will return "aValue".

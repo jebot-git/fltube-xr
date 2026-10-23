@@ -266,7 +266,7 @@ FLTUBE_STATUS_CODES download_file(std::string url, std::string output_dir, std::
 
 FLTUBE_STATUS_CODES check_url_access(std::string url, CURL *curl);
 
-Fl_Image* create_resized_image_from_jpg(std::string jpg_filepath, int target_width);
+#include "thumbnail_image.h"
 
 std::string getOptionValue(int argc, char* argv[], const std::string& option);
 

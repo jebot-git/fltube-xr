@@ -206,13 +206,13 @@ class YtDlp_Helper {
 
                 std::string dateFormat = _("%Y-%m-%d");
                 std::string fullDateFormat = _("%Y-%m-%d %H:%M:%S");
-                PRINT_SEARCH_METADATA_TEMPLATE = std::string("title=\\\"%(title)s\\\">>thumbnail=\\\"%(thumbnails.0.url)s" \
+                PRINT_SEARCH_METADATA_TEMPLATE = std::string("title=\\\"%(title)s\\\">>thumbnail=\\\"%(thumbnail,thumbnails.-1.url)s" \
                 "\\\">>creators=\\\"%(uploader,playlist_channel)s\\\">>video_id=\\\"%(id)s\\\">>upload_date=\\\"%(upload_date>")
                 + dateFormat +
                 ")s\\\">>duration=\\\"%(duration>%H:%M:%S)s\\\">>channel_id=\\\"%(playlist_channel_id,channel_id)s\\\">>live_status=\\\"%(live_status)s\\\">>viewers_count=\\\"%(view_count,concurrent_view_count)s\\\">>";
 
                 PRINT_DETAILED_METADATA_TEMPLATE =
-                std::string("title=\\\"%(title)s\\\">>thumbnail=\\\"%(thumbnails.0.url)s" \
+                std::string("title=\\\"%(title)s\\\">>thumbnail=\\\"%(thumbnail,thumbnails.-1.url)s" \
                 "\\\">>creators=\\\"%(uploader,playlist_channel)s\\\">>video_id=\\\"%(id)s\\\">>upload_date=\\\"%(upload_date>")
                 + dateFormat + ")s\\\">>duration=\\\"%(duration>%H:%M:%S)s\\\">>channel_id=\\\"%(playlist_channel_id,channel_id)s\\\">>is_live=\\\"%(is_live)s\\\">>viewers_count=\\\"%(view_count)s\\\">>concurrent_viewers_count=\\\"%(concurrent_view_count)s\\\">>timestamp=\\\"%(timestamp)s\\\">>timestamp_text=\\\"%(timestamp>"
                 + fullDateFormat +
