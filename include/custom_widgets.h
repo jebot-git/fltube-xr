@@ -14,6 +14,7 @@
 #define CUSTOM_WIDGETS_H
 
 #include "ytdlp_helper.h"
+#include "search_input.h"
 #include <FL/Enumerations.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Pack.H>
@@ -29,19 +30,6 @@ struct Message {
         id(id), title(title), description(description) {};
 };
 
-class SearchInput: public Fl_Input {
-private:
-    std::shared_ptr<YtDlp_Helper> ytdlp_source;
-    int last_pressed_key = 0;       // Used to track last pressed key before current, in order to avoid some undesired
-                                    // behaviour for some graphics server (in particular, Wayland repeat infinitelly the
-                                    // last pressed key after pressing FL_Enter, I don't know why...).
-public:
-    SearchInput(int X,int Y,int W,int H, const char * label): Fl_Input(X,Y,W,H,label){}
-    void set_search_source(std::shared_ptr<YtDlp_Helper> source) {
-        ytdlp_source = source;
-    }
-    int handle(int event);
-};
 
 class MessageQueue {
 private:

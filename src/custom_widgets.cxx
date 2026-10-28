@@ -19,35 +19,9 @@
 #include <FL/Fl_Scroll.H>
 #include <string>
 
-int SearchInput::handle(int event) {
-    std::string new_value;
-    if (event == FL_KEYDOWN) {
-        if (Fl::event_state(FL_CTRL) && Fl::event_key() == 'l') {
-            take_focus();
-            position(size(), 0);
-            return 1;
-        }
-        switch (Fl::event_key()) {
-            case FL_Up:
-                new_value = ytdlp_source->getNextInSearchHistory();
-                last_pressed_key = FL_Up;
-                if (!new_value.empty()) this->value(new_value.c_str());
-                return 1;
-            case FL_Down:
-                new_value = ytdlp_source->getPreviousInSearchHistory();
-                last_pressed_key = FL_Down;
-                if (!new_value.empty()) this->value(new_value.c_str());
-                return 1;
-            case FL_Enter:
-                if (last_pressed_key != FL_Enter) {
-                    this->do_callback();
-                    last_pressed_key = FL_Enter;
-                }
-                return 1;
-        }
-    }
-    last_pressed_key = Fl::event_key();
-    return Fl_Input::handle(event);
+void SearchInput::set_search_source(std::shared_ptr<YtDlp_Helper> source) {
+    next_in_history = [source] { return source->getNextInSearchHistory(); };
+    previous_in_history = [source] { return source->getPreviousInSearchHistory(); };
 }
 
 void MessageQueue::add_message(const std::string& id, const std::string& title, const std::string& desc) {

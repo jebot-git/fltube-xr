@@ -133,3 +133,14 @@ pixels and player argument handling. The private DomeD menu test also accepts
 `FLTUBE_TEST_FONT` and `FLTUBE_TEST_FONT_SIZE` for a selected BDF face; the
 Galmuri11 qualified face at 17 pixels was checked. A live YouTube thumbnail
 response was WebP despite its JPEG URL and decoded correctly in the new loader.
+
+## Search input after playback
+
+The search field consumes both Return and keypad Enter before FLTK's input
+handler. It latches Enter before running callbacks and resets on key release or
+focus loss, so nested dispatch while opening/returning from the player cannot
+repeat the search. Text-only carriage returns/line feeds are rejected: FLTK
+otherwise treats these as literal Ctrl-M/Ctrl-J input and displays `^M` in a
+single-line field. Existing search text, Unicode typing, history and Ctrl+L
+remain usable. The isolated `search-input` CTest reproduces the previous CR
+insertion and checks repeated Enter, release, focus and reentrant callbacks.

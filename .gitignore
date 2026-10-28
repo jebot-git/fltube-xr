@@ -9,3 +9,5 @@ build-release/
 stage/
 artifacts/
 build-system-release/
+
+/build-*/

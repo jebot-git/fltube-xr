@@ -95,7 +95,7 @@ try:
         env = dict(os.environ, DISPLAY=display, HOME=directory, XDG_RUNTIME_DIR=directory,
             XDG_CONFIG_HOME=str(runtime / '.config'), XDG_DATA_HOME=str(runtime / 'data'),
             XDG_CACHE_HOME=str(runtime / '.cache'),
-            DOME_PREVIEW_PORT=str(port), DOME_START_XR='0', LIBGL_ALWAYS_SOFTWARE='1',
+            DOME_PREVIEW_PORT=str(port), DOME_START_XR='0', DOME_LOGIN_SESSION='0', LIBGL_ALWAYS_SOFTWARE='1',
             XR_RUNTIME_JSON=str(runtime / 'no-runtime.json'), RUST_LOG='error')
         env.pop('WAYLAND_DISPLAY', None); env.pop('WAYLAND_SOCKET', None)
         start([str(DOME / 'target/release/dome-compositor'), '--backend', 'nested'], 'compositor', env)
